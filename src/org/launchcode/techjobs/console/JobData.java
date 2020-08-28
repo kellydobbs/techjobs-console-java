@@ -19,7 +19,7 @@ public class JobData {
     private static final String DATA_FILE = "resources/job_data.csv";
     private static Boolean isDataLoaded = false;
 
-    private static ArrayList<HashMap<String, String>> allJobs;
+    private static ArrayList<HashMap<String, String>> allJobs; // an array list that contains a hashmap
 
     /**
      * Fetch list of all values from loaded data,
@@ -54,6 +54,9 @@ public class JobData {
         return allJobs;
     }
 
+
+
+
     /**
      * Returns results of search the jobs data by key/value, using
      * inclusion of the search term.
@@ -76,13 +79,36 @@ public class JobData {
 
             String aValue = row.get(column);
 
-            if (aValue.contains(value)) {
+            if (aValue.toLowerCase().contains(value.toLowerCase())) {
                 jobs.add(row);
             }
         }
-
+        if (jobs.isEmpty()) {
+            System.out.println("No results found for search.");
+        }
         return jobs;
     }
+
+    public static ArrayList<HashMap<String, String>> findByValue (String searchTerm) {
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+        for (HashMap<String, String> job : allJobs) {
+            for (String value: job.values()) {
+                if (value.toLowerCase().contains(searchTerm.toLowerCase())) {
+                    if (!jobs.contains(job)){
+                        jobs.add(job);
+                    }
+                }
+            }
+        }
+        if (jobs.isEmpty()){
+            System.out.println("No results found for search.");
+        }
+        return jobs;
+    }
+
 
     /**
      * Read in data from a CSV file and store it in a list
@@ -104,6 +130,7 @@ public class JobData {
             String[] headers = parser.getHeaderMap().keySet().toArray(new String[numberOfColumns]);
 
             allJobs = new ArrayList<>();
+
 
             // Put the records into a more friendly format
             for (CSVRecord record : records) {
